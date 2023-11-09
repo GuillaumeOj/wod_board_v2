@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "wod-board-v2"
+version = "0.1.0"
+description = "An application to track your WODs in your Crossfit's Box"
+authors = ["Guillaume <7831777+GuillaumeOj@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.12"
+Django = "^4.2.7"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.11.0"
+isort = "^5.12.0"
+flake8 = "^6.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
