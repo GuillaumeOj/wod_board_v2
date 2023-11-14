@@ -1,6 +1,12 @@
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+if os.environ.get("ENVIRONMENT") == "DEV":
+    load_dotenv()
+    print(os.environ.get("POSTGRES_PORT"))
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
