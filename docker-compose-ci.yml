@@ -1,12 +1,4 @@
 services:
-  web:
-    build:
-      context: .
-      dockerfile: docker/ci/Dockerfile
-    image: wod-board-web
-    command: poetry run python manage.py test --verbosity 3
-    depends_on:
-      - db
   db:
     image: postgres:latest
     environment:
