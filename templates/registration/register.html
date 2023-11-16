@@ -1,7 +1,9 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load i18n %}
 
 {% block content %}
-<h2>Register</h2>
+{% translate "Register" as register %}
+<h2>{{ register }}</h2>
 <form method="post" action="{% url 'register' %}">
   {% csrf_token %}
   {{ form.non_field_errors }}
@@ -21,6 +23,6 @@
     {% endif %}
   </div>
   {% endfor %}
-  <button type="submit">Register</button>
+  <button type="submit">{{ register }}</button>
 </form>
 {% endblock %}

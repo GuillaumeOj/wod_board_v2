@@ -73,4 +73,4 @@ jobs:
         run: docker compose -f "docker-compose-ci.yml" up -d --build
       - name: Run tests
         run: |
-          poetry run python manage.py test --verbosity 3
+          poetry run pytest --verbose
