@@ -9,11 +9,16 @@ readme = "README.md"
 python = "3.12"
 Django = "^4.2.7"
 psycopg = {extras = ["binary"], version = "^3.1.12"}
+python-dotenv = "^1.0.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.11.0"
 isort = "^5.12.0"
 flake8 = "^6.1.0"
+django-stubs = {extras = ["compatible-mypy"], version = "^4.2.6"}
+mypy = "<1.7.0"
+pytest-django = "^4.7.0"
+ipdb = "^0.13.13"
 
 [build-system]
 requires = ["poetry-core"]
@@ -24,3 +29,13 @@ max-line-length = 100
 
 [tool.isort]
 profile = "black"
+
+[tool.mypy]
+plugins = [ "mypy_django_plugin.main" ]
+
+[tool.django-stubs]
+django_settings_module = "core.settings"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "core.settings"
+python_files = ["tests.py", "test_*.py"]
