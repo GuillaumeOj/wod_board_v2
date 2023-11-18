@@ -1,9 +1,0 @@
-{% extends 'base.html' %}
-{% load i18n %}
-
-{% block content %}
-<h2>{% translate "User Profile" %}</h2>
-<p><strong>{% translate "Username" %}:</strong> {{ user_profile.username }}</p>
-<p><strong>{% translate "Email" %}:</strong> {{ user_profile.email }}</p>
-<!-- Add other user profile information as needed -->
-{% endblock %}

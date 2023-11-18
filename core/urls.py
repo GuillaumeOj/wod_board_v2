@@ -1,9 +1,11 @@
 from django.contrib import admin
 from django.urls import include, path
 
+from core.views import HomeView
+
 urlpatterns = [
-    path("accounts/", include("django.contrib.auth.urls")),
+    path("", HomeView.as_view(), name="home"),
     path("admin/", admin.site.urls),
-    path("accounts/", include("users.urls")),
+    path("users/", include("users.urls", namespace="users")),
     path("__reload__/", include("django_browser_reload.urls")),
 ]

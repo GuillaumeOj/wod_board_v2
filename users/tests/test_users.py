@@ -52,7 +52,7 @@ from users.models import User
 def test_registration(
     email, password1, password2, username, first_name, last_name, error_keys, client
 ):
-    url = reverse("register")
+    url = reverse("users:register")
     data = {
         "email": email,
         "password1": password1,
@@ -77,11 +77,13 @@ def test_registration(
 
 @pytest.mark.django_db
 def test_user_profile(client, create_user, test_password):
-    url = reverse("user_profile")
+    url = reverse("users:profile")
 
     # Anonymous user is redirect to the login view
     response = client.get(url)
-    expected_redirection_url = f"{reverse('login')}?next={reverse('user_profile')}"
+    expected_redirection_url = (
+        f"{reverse('users:login')}?next={reverse('users:profile')}"
+    )
     assertRedirects(response, expected_redirection_url)
 
     # Authenticated user can see their profile
