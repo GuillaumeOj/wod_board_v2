@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "tailwind",
     "theme",
     "django_browser_reload",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
@@ -93,6 +94,7 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+LOGIN_URL = "/users/login/"
 
 
 LANGUAGE_CODE = "en-us"
