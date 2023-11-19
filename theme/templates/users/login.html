@@ -1,17 +1,13 @@
-{% extends "base.html" %} 
-{% load i18n %} 
+{% extends "base.html" %}
+{% load i18n %}
 
-{% block content %} 
+{% block content %}
 {% translate "Login" as login %}
 <section class="flex-row p-4">
   <h2 class="grow text-2xl text-center">
     {{ login }}
   </h2>
-  <form 
-    method="post" 
-    action="{% url 'users:login' %}" 
-    class="grow text-center justify-center"
-  >
+  <form method="post" action="{% url 'users:login' %}" class="grow text-center justify-center">
     {% csrf_token %}
     {% if form.non_field_errors %}
     <div class="text-red-700">
@@ -19,22 +15,14 @@
     </div>
     {% endif %}
     {% for field in form %}
-    <div 
-      class="form-group my-4{% if field.errors %} has-error{% endif %}"
-    >
-      <label 
-        for="{{ field.id_for_label }}" 
-        class="block text-sm font-medium leading-6 text-gray-900"
-      >
+    <div class="form-group my-4{% if field.errors %} has-error{% endif %}">
+      <label for="{{ field.id_for_label }}" class="block text-sm font-medium leading-6 text-gray-900">
         {{ field.label_tag }}
       </label>
       {{ field }}
     </div>
     {% endfor %}
-    <button 
-      type="submit" 
-      class="mt-2 py-1 px-2 bg-teal-800 hover:bg-teal-600 rounded-md text-white font-semibold"
-    >
+    <button type="submit" class="mt-2 py-1 px-2 bg-teal-800 hover:bg-teal-600 rounded-md text-white font-semibold">
       {{ login }}
     </button>
   </form>
