@@ -7,11 +7,7 @@
   <h2 class="text-2xl text-center">
     {{ register }}
   </h2>
-  <form 
-    method="post" 
-    action="{% url 'users:register' %}" 
-    class="text-center"
-  >
+  <form method="post" action="{% url 'users:register' %}" class="text-center">
     {% csrf_token %}
     {% if form.non_field_errors %}
     <div class="text-red-700">
@@ -19,13 +15,8 @@
     </div>
     {% endif %}
     {% for field in form %}
-    <div 
-      class="form-group my-4{% if field.errors %} has-error{% endif %}"
-    >
-      <label 
-        for="{{ field.id_for_label }}"
-        class="block text-sm font-medium leading-6 text-gray-900"
-      >
+    <div class="form-group my-4{% if field.errors %} has-error{% endif %}">
+      <label for="{{ field.id_for_label }}" class="block text-sm font-medium leading-6 text-gray-900">
         {{ field.label_tag }}
         {% if field.field.required %}<span class="required-field">*</span>{% endif %}
       </label>
@@ -39,12 +30,9 @@
       {% endif %}
     </div>
     {% endfor %}
-    <button 
-      type="submit"
-      class="mt-2 py-1 px-2 bg-teal-800 hover:bg-teal-600 rounded-md text-white font-semibold"
-    >
+    <button type="submit" class="mt-2 py-1 px-2 bg-teal-800 hover:bg-teal-600 rounded-md text-white font-semibold">
       {{ register }}
     </button>
   </form>
 </section>
-  {% endblock %}
+{% endblock %}
