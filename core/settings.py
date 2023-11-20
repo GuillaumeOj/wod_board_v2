@@ -3,7 +3,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-if os.environ.get("ENVIRONMENT") == "DEV":
+CURRENT_ENVIRONMENT = os.environ.get("ENVIRONMENT")
+if CURRENT_ENVIRONMENT == "DEV":
     load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,7 +15,9 @@ SECRET_KEY = os.environ["SECRET_KEY"]
 DEBUG = os.environ["DEBUG"]
 
 ALLOWED_HOSTS = os.environ["ALLOWED_HOSTS"].split(",")
-INTERNAL_IPS = ["127.0.0.1"]
+
+if CURRENT_ENVIRONMENT == "DEV":
+    INTERNAL_IPS = ["127.0.0.1"]
 
 
 INSTALLED_APPS = [
@@ -31,6 +34,11 @@ INSTALLED_APPS = [
     "django_browser_reload",
     "django_extensions",
 ]
+if CURRENT_ENVIRONMENT == "DEV":
+    INSTALLED_APPS += [
+        "debug_toolbar",
+    ]
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -42,6 +50,10 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
+if CURRENT_ENVIRONMENT == "DEV":
+    MIDDLEWARE += [
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
+    ]
 
 ROOT_URLCONF = "core.urls"
 
