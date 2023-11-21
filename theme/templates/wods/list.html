@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<section class="p-4">
+  <h2 class="text-2xl text-center">
+    {% translate "List of your Wods" %}
+  </h2>
+  <ul>
+    {% for wod in wods %}
+    <li>
+      <p>
+        {{ wod.name }} / {{ wod.category }}
+      </p>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}
