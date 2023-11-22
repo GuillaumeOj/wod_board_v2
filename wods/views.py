@@ -23,6 +23,7 @@ class WodCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy("home")
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        self.object = None
         form = self.get_form()
         if not form.is_valid():
             return self.form_invalid(form)
@@ -30,5 +31,7 @@ class WodCreateView(LoginRequiredMixin, CreateView):
         wod = form.save(commit=False)
         wod.user = request.user
         wod.save()
+
+        self.object = wod
 
         return HttpResponseRedirect(self.get_success_url())
