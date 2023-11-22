@@ -3,19 +3,23 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-if os.environ.get("ENVIRONMENT") == "DEV":
+from core.utils import str_to_bool
+
+CURRENT_ENVIRONMENT = os.environ.get("ENVIRONMENT")
+DJANGO_TOOLBAR = False
+if CURRENT_ENVIRONMENT == "DEV":
     load_dotenv()
+    INTERNAL_IPS = ["127.0.0.1"]
+    DJANGO_TOOLBAR = str_to_bool(os.environ.get("DJANGO_TOOLBAR", DJANGO_TOOLBAR))
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 SECRET_KEY = os.environ["SECRET_KEY"]
 
-DEBUG = os.environ["DEBUG"]
+DEBUG = str_to_bool(os.environ["DEBUG"])
 
 ALLOWED_HOSTS = os.environ["ALLOWED_HOSTS"].split(",")
-INTERNAL_IPS = ["127.0.0.1"]
-
 
 INSTALLED_APPS = [
     "users",
@@ -32,6 +36,7 @@ INSTALLED_APPS = [
     "django_extensions",
 ]
 
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -42,6 +47,12 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
+
+if CURRENT_ENVIRONMENT == "DEV" and DJANGO_TOOLBAR:
+    INSTALLED_APPS.append("debug_toolbar")
+    MIDDLEWARE.append(
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
+    )
 
 ROOT_URLCONF = "core.urls"
 
@@ -105,6 +116,7 @@ USE_TZ = True
 
 
 STATIC_URL = "static/"
+STATICFILES_DIRS = [BASE_DIR / "statics"]
 
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

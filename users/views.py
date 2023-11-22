@@ -22,7 +22,6 @@ class UserRegisterView(CreateView):
 
 class UserLoginView(LoginView):
     form_class = UserLoginForm
-    redirect_authenticated_user = True
     template_name = "users/login.html"
     next_page = reverse_lazy("users:profile")
 
@@ -38,5 +37,4 @@ class UserProfileView(LoginRequiredMixin, DetailView):
     context_object_name = "profile"
 
     def get_object(self, queryset: QuerySet["User"] | None = None) -> "User":
-        del queryset
         return self.request.user

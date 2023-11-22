@@ -81,9 +81,7 @@ def test_user_profile(client, create_user, test_password):
 
     # Anonymous user is redirect to the login view
     response = client.get(url)
-    expected_redirection_url = (
-        f"{reverse('users:login')}?next={reverse('users:profile')}"
-    )
+    expected_redirection_url = f"{reverse('users:login')}?next={url}"
     assertRedirects(response, expected_redirection_url)
 
     # Authenticated user can see their profile
