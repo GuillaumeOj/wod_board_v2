@@ -1,64 +1,55 @@
-{% load static tailwind_tags %} {% load i18n %}
+{% load static %}
+{% load static tailwind_tags %}
+{% load i18n %}
 <!doctype html>
 <html lang="en">
-  <head>
-    <title>{% block title %}Wod Board{% endblock %}</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link rel="icon" href="data:," />
-    {% tailwind_css %}
-  </head>
 
-  <body
-    class="bg-gray-100 font-sans leading-normal tracking-normal min-h-screen"
-  >
-    <header class="mx-auto flex items-start bg-teal-800 text-white h-">
-      <h1 class="flex-none m-8 text-4xl font-bold">Wod Board</h1>
-      <ul class="grow"></ul>
-      <div class="flex-none my-auto mr-8">
-        <ul class="flex space-x-4 text-xl font-bold">
-          {% if user.is_authenticated %}
-          <li>
-            <a 
-              href="{% url 'users:profile' %}"
-              class="hover:text-teal-200"
-            >
-              {% translate "Your Profile" %}
-            </a>
-          </li>
-          <li>|</li>
-          <li>
-            <a 
-              href="{% url 'users:logout' %}"
-              class="hover:text-teal-200"
-            >
-              {% translate "Logout" %}
-            </a>
-          </li>
-          {% else %}
-          <li>
-            <a 
-              href="{% url 'users:register' %}"
-              class="hover:text-teal-200"
-            >
-              {% translate "Register" %}
-            </a>
-          </li>
-          <li>|</li>
-          <li>
-            <a 
-              href="{% url 'users:login' %}"
-              class="hover:text-teal-200"
-            >
-              {% translate "Login" %} >
-            </a>
-          </li>
-          {% endif %}
-        </ul>
-      </div>
-    </header>
-    <main>{% block content %}{% endblock %}</main>
-    <footer></footer>
-  </body>
+<head>
+  <title>{% block title %}Wod Board{% endblock %}</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <link rel="icon" href="data:," />
+  {% tailwind_css %}
+  <script src="{% static 'js/htmx.min.js' %}" defer></script>
+</head>
+
+<body class="bg-gray-100 font-sans leading-normal tracking-normal min-h-screen">
+  <header class="mx-auto flex items-start bg-teal-800 text-white h-">
+    <h1 class="flex-none m-8 text-4xl font-bold">Wod Board</h1>
+    <ul class="grow"></ul>
+    <div class="flex-none my-auto mr-8">
+      <ul class="flex space-x-4 text-xl font-bold">
+        {% if user.is_authenticated %}
+        <li>
+          <a href="{% url 'users:profile' %}" class="hover:text-teal-200">
+            {% translate "Your Profile" %}
+          </a>
+        </li>
+        <li>|</li>
+        <li>
+          <a href="{% url 'users:logout' %}" class="hover:text-teal-200">
+            {% translate "Logout" %}
+          </a>
+        </li>
+        {% else %}
+        <li>
+          <a href="{% url 'users:register' %}" class="hover:text-teal-200">
+            {% translate "Register" %}
+          </a>
+        </li>
+        <li>|</li>
+        <li>
+          <a href="{% url 'users:login' %}" class="hover:text-teal-200">
+            {% translate "Login" %} >
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </header>
+  <main>{% block content %}{% endblock %}</main>
+  <footer></footer>
+</body>
+
 </html>
