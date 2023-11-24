@@ -1,3 +1,5 @@
+import uuid
+
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -14,20 +16,24 @@ class WodCategoryChoices(models.Choices):
 
 
 class Movement(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(unique=True)
 
 
 class Round(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     movements = models.ManyToManyField(Movement, through="MovementInRound")
 
 
 class MovementInRound(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     movement = models.ForeignKey(Movement, on_delete=models.CASCADE)
     round = models.ForeignKey(Round, on_delete=models.CASCADE)
     repetitions = models.IntegerField(validators=[MinValueValidator(1)], default=1)
 
 
 class Wod(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=15, blank=True, null=True)
     category = models.CharField(choices=WodCategoryChoices.choices)
     rounds = models.ManyToManyField(Round, through="RoundInWod")
@@ -41,6 +47,7 @@ class Wod(models.Model):
 
 
 class RoundInWod(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     round = models.ForeignKey(Round, on_delete=models.CASCADE)
     wod = models.ForeignKey(Wod, on_delete=models.CASCADE)
     repetitions = models.IntegerField(validators=[MinValueValidator(1)], default=1)
