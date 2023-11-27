@@ -1,0 +1,19 @@
+{% load i18n %}
+<section class="p-4">
+  <h2 class="text-2xl text-center">
+    {% translate "List of your Wods" %}
+  </h2>
+  {% if wods %}
+  <ul>
+    {% for wod in wods %}
+    <li>
+      {{ wod.name }} / {{ wod.category }}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>
+    {% translate "You have not created Wods for now." %}
+  </p>
+  {% endif %}
+</section>

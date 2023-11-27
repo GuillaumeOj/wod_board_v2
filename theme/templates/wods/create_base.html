@@ -2,12 +2,5 @@
 {% load i18n %}
 
 {% block content %}
-<section class="p-4">
-  <h2 class="text-2xl text-center">
-    {% translate "Create a new Wod" %}
-  </h2>
-  {% include "core/default_form.html" with action_url="wods:create" submit_name="Create" %}
-  </form>
-
-</section>
+{% include "wods/create_partial.html" %}
 {% endblock %}

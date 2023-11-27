@@ -1,0 +1,10 @@
+{% load i18n %}
+<section class="p-4">
+  <h2 class="text-2xl text-center">
+    {% translate "Create a new Wod" %}
+  </h2>
+  <form hx-post="{% url 'wods:create' %}" class="grow">
+    {% csrf_token %}
+    <!-- Rework the template here -->
+  </form>
+</section>
