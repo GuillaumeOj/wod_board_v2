@@ -1,10 +1,30 @@
+{% load static %}
 {% load i18n %}
 <section class="p-4">
   <h2 class="text-2xl text-center">
     {% translate "Create a new Wod" %}
   </h2>
-  <form hx-post="{% url 'wods:create' %}" class="grow">
+  <form hx-post="{% url 'wods:create' %}" id="wod-form" class="grow">
     {% csrf_token %}
-    <!-- Rework the template here -->
+    {{ form.as_p }}
+    {{ round_in_wod_formset.management_form }}
+    <fieldset id="rounds" class="my-5 p-5 border-2">
+      <legend>
+        {% translate "Rounds" %}
+      </legend>
+      {% for round_in_wod_form in round_in_wod_formset %}
+      <div class="round-form">
+        {{round_in_wod_form.as_p}}
+      </div>
+      {% endfor %}
+      <button id="add-round-form" type="button"
+        class="py-1 px-2 bg-teal-800 hover:bg-teal-600 rounded-md text-white font-semibold"
+        hx-on="click: addRoundForm(event, 'round-form', 'rounds', 'add-round-form', 'id_roundinwod_set-TOTAL_FORMS', 'roundinwod_set')">
+        Add round
+      </button>
+    </fieldset>
   </form>
+
+
+  <script src="{% static 'js/duplicate_form.js' %}"></script>
 </section>

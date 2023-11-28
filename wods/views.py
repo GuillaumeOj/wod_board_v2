@@ -1,10 +1,12 @@
+from typing import Any
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView
 
 from core.types import HtmxHttpRequest
-from wods.forms import WodForm
+from wods.forms import RoundInWodFormset, WodForm
 from wods.models import Wod
 
 
@@ -34,6 +36,15 @@ class WodCreateView(LoginRequiredMixin, CreateView):
         if self.request.htmx:
             return ["wods/create_partial.html"]
         return [self.template_name]
+
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context_data = super().get_context_data(**kwargs)
+        if self.request.method == "GET":
+            context_data["round_in_wod_formset"] = RoundInWodFormset(
+                instance=self.object
+            )
+
+        return context_data
 
     def post(self, request: HtmxHttpRequest, *args, **kwargs) -> HttpResponse:
         self.object = None
