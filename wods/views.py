@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView
 
 from core.types import HtmxHttpRequest
-from wods.forms import RoundInWodFormset, WodForm
+from wods.forms import RoundFormset, WodForm
 from wods.models import Wod
 
 
@@ -40,8 +40,8 @@ class WodCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context_data = super().get_context_data(**kwargs)
         if self.request.method == "GET":
-            context_data["round_in_wod_formset"] = RoundInWodFormset(
-                instance=self.object
+            context_data["round_formset"] = RoundFormset(
+                prefix="round_in_wod", form_kwargs={"wod": self.object}
             )
 
         return context_data
