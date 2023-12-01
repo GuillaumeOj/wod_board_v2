@@ -30,10 +30,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django_htmx",
-    "tailwind",
-    "theme",
-    "django_browser_reload",
     "django_extensions",
 ]
 
@@ -46,8 +42,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django_browser_reload.middleware.BrowserReloadMiddleware",
-    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 if CURRENT_ENVIRONMENT == "DEV" and DJANGO_TOOLBAR:
@@ -61,7 +55,7 @@ ROOT_URLCONF = "core.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -73,7 +67,6 @@ TEMPLATES = [
         },
     },
 ]
-TAILWIND_APP_NAME = "theme"
 
 WSGI_APPLICATION = "core.wsgi.application"
 
