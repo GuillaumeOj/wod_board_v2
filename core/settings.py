@@ -6,11 +6,8 @@ from dotenv import load_dotenv
 from core.utils import str_to_bool
 
 CURRENT_ENVIRONMENT = os.environ.get("ENVIRONMENT")
-DJANGO_TOOLBAR = False
 if CURRENT_ENVIRONMENT == "DEV":
     load_dotenv()
-    INTERNAL_IPS = ["127.0.0.1"]
-    DJANGO_TOOLBAR = str_to_bool(os.environ.get("DJANGO_TOOLBAR", DJANGO_TOOLBAR))
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -31,6 +28,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
+    "rest_framework",
+    "drf_spectacular",
+    "drf_spectacular_sidecar",
 ]
 
 
@@ -43,12 +43,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
-
-if CURRENT_ENVIRONMENT == "DEV" and DJANGO_TOOLBAR:
-    INSTALLED_APPS.append("debug_toolbar")
-    MIDDLEWARE.append(
-        "debug_toolbar.middleware.DebugToolbarMiddleware",
-    )
 
 ROOT_URLCONF = "core.urls"
 
@@ -101,7 +95,6 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
-LOGIN_URL = "/users/login/"
 
 
 LANGUAGE_CODE = "en-us"
@@ -112,6 +105,23 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "statics"]
+STATIC_ROOT = BASE_DIR / "public"
 
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication"
+    ],
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Wod Board API",
+    "DESCRIPTION": "A place to track your WODs",
+    "VERSION": "0.0.1",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "REDOC_DIST": "SIDECAR",
+}

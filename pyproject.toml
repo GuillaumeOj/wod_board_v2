@@ -11,6 +11,11 @@ Django = "^4.2.7"
 psycopg = {extras = ["binary"], version = "^3.1.12"}
 python-dotenv = "^1.0.0"
 django-extensions = "^3.2.3"
+djangorestframework = "^3.14.0"
+django-filter = "^23.4"
+drf-nested-routers = "^0.93.4"
+markdown = "^3.5.1"
+drf-spectacular = {extras = ["sidecar"], version = "^0.26.5"}
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.11.0"

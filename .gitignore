@@ -1,2 +1,7 @@
 # Django specific targets
 staticfiles
+schema.yml
+
+# Yarn specific targets
+.pnp.loader.mjs
+.pnp.cjs

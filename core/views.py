@@ -1,13 +1,15 @@
+from typing import Any
+
 from django.views.generic import TemplateView
 
-from core.types import HtmxHttpRequest
+
+class WodBoardView(TemplateView):
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context_data = super().get_context_data(**kwargs)
+        context_data["user"] = self.request.user
+
+        return context_data
 
 
-class HomeView(TemplateView):
+class HomeView(WodBoardView, TemplateView):
     template_name: str = "index_base.html"
-    request: HtmxHttpRequest
-
-    def get_template_names(self) -> list[str]:
-        if self.request.htmx:
-            return ["index_partial.html"]
-        return [self.template_name]
