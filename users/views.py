@@ -1,59 +1,63 @@
-import typing
+from typing import Any
 
-from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView, LogoutView
-from django.db.models import QuerySet
-from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView
+from django.http import HttpRequest
+from drf_spectacular.utils import PolymorphicProxySerializer, extend_schema
+from rest_framework import permissions, viewsets
+from rest_framework.response import Response
 
-from core.types import HtmxHttpRequest
-from users.forms import UserCreationForm, UserLoginForm
-
-if typing.TYPE_CHECKING:
-    from users.models import User
+from users.models import User
+from users.serializers import UserCreateSerializer, UserDetailSerializer, UserSerializer
 
 
-class UserRegisterView(CreateView):
-    model = settings.AUTH_USER_MODEL
-    form_class = UserCreationForm
-    template_name: str = "users/register_base.html"
-    success_url = reverse_lazy("users:login")
-    request: HtmxHttpRequest
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-    def get_template_names(self) -> list[str]:
-        if self.request.htmx:
-            return ["users/register_partial.html"]
-        return [self.template_name]
+    def get_serializer_class(self):
+        parser_context: dict[str, Any] = getattr(self.request, "parser_context")
+        if not parser_context:
+            return super().get_serializer_class()
 
+        user_detail_id = parser_context["kwargs"].get("pk")
+        # If the request user is anonymous, they don't have an id
+        request_user_id = getattr(self.request.user, "id")
+        request_user_is_staff = getattr(self.request.user, "is_staff")
 
-class UserLoginView(LoginView):
-    form_class = UserLoginForm
-    template_name: str = "users/login_base.html"
-    next_page = reverse_lazy("users:profile")
-    request: HtmxHttpRequest
+        if (
+            user_detail_id
+            and request_user_id
+            and (user_detail_id == str(request_user_id) or request_user_is_staff)
+        ):
+            return UserDetailSerializer
 
-    def get_template_names(self) -> list[str]:
-        if self.request.htmx:
-            return ["users/login_partial.html"]
-        return [self.template_name]
+        request_method = self.request.method
+        if request_method == "POST" or (
+            request_method in ["PUT", "PATCH"]
+            and user_detail_id
+            and request_user_id
+            and (user_detail_id == str(request_user_id) or request_user_is_staff)
+        ):
+            return UserCreateSerializer
 
+        return super().get_serializer_class()
 
-class UserLogoutView(LogoutView):
-    template_name = "users/logout.html"
-    next_page = reverse_lazy("home")
+    @extend_schema(
+        responses={
+            200: PolymorphicProxySerializer(
+                component_name="UserDetailOrNot",
+                serializers=[UserSerializer, UserDetailSerializer],
+                resource_type_field_name=None,
+            )
+        }
+    )
+    def retrieve(self, request: HttpRequest, *args, **kwargs) -> Response:
+        return super().retrieve(request, *args, **kwargs)
 
+    @extend_schema(responses=UserCreateSerializer)
+    def partial_update(self, request: HttpRequest, *args, **kwargs) -> Response:
+        return super().partial_update(request, *args, **kwargs)
 
-class UserProfileView(LoginRequiredMixin, DetailView):
-    model = settings.AUTH_USER_MODEL
-    template_name: str = "users/profile_base.html"
-    context_object_name = "profile"
-    request: HtmxHttpRequest
-
-    def get_template_names(self) -> list[str]:
-        if self.request.htmx:
-            return ["users/profile_partial.html"]
-        return [self.template_name]
-
-    def get_object(self, queryset: QuerySet["User"] | None = None) -> "User":
-        return self.request.user
+    @extend_schema(responses=UserCreateSerializer)
+    def update(self, request: HttpRequest, *args, **kwargs) -> Response:
+        return super().update(request, *args, **kwargs)
