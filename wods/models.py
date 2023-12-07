@@ -1,7 +1,6 @@
 import uuid
 
 from django.conf import settings
-from django.core import validators
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
