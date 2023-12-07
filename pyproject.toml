@@ -12,6 +12,7 @@ psycopg = {extras = ["binary"], version = "^3.1.12"}
 python-dotenv = "^1.0.0"
 django-extensions = "^3.2.3"
 djangorestframework = "^3.14.0"
+django-rest-knox = "^4.2.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.11.0"
