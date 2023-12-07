@@ -6,11 +6,9 @@ from dotenv import load_dotenv
 from core.utils import str_to_bool
 
 CURRENT_ENVIRONMENT = os.environ.get("ENVIRONMENT")
-DJANGO_TOOLBAR = False
 if CURRENT_ENVIRONMENT == "DEV":
     load_dotenv()
     INTERNAL_IPS = ["127.0.0.1"]
-    DJANGO_TOOLBAR = str_to_bool(os.environ.get("DJANGO_TOOLBAR", DJANGO_TOOLBAR))
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -30,11 +28,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django_htmx",
-    "tailwind",
-    "theme",
-    "django_browser_reload",
     "django_extensions",
+    "rest_framework",
 ]
 
 
@@ -46,23 +41,15 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django_browser_reload.middleware.BrowserReloadMiddleware",
-    "django_htmx.middleware.HtmxMiddleware",
 ]
-
-if CURRENT_ENVIRONMENT == "DEV" and DJANGO_TOOLBAR:
-    INSTALLED_APPS.append("debug_toolbar")
-    MIDDLEWARE.append(
-        "debug_toolbar.middleware.DebugToolbarMiddleware",
-    )
 
 ROOT_URLCONF = "core.urls"
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
-        "APP_DIRS": True,
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": False,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -73,7 +60,6 @@ TEMPLATES = [
         },
     },
 ]
-TAILWIND_APP_NAME = "theme"
 
 WSGI_APPLICATION = "core.wsgi.application"
 
