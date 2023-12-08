@@ -20,8 +20,6 @@ DEBUG = str_to_bool(os.environ["DEBUG"])
 ALLOWED_HOSTS = os.environ["ALLOWED_HOSTS"].split(",")
 
 INSTALLED_APPS = [
-    "users",
-    "wods",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -29,6 +27,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
+    "knox",
+    "users",
+    "wods",
     "rest_framework",
 ]
 
@@ -49,7 +50,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [BASE_DIR / "templates"],
-        "APP_DIRS": False,
+        "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -105,6 +106,12 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "statics"]
+
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": ("knox.auth.TokenAuthentication",),
+    "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
+}
 
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

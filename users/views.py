@@ -1,40 +1,54 @@
-import typing
+from django.contrib.auth import login
+from knox.models import AuthToken
+from knox.views import LoginView
+from rest_framework.generics import CreateAPIView, RetrieveAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.status import HTTP_201_CREATED
+from rest_framework.views import Response
 
-from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView, LogoutView
-from django.db.models import QuerySet
-from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView
-
-from users.forms import UserCreationForm, UserLoginForm
-
-if typing.TYPE_CHECKING:
-    from users.models import User
+from users.serializers import (
+    UserAuthTokenSerializer,
+    UserDetailSerializer,
+    UserRegisterSerializer,
+)
 
 
-class UserRegisterView(CreateView):
-    model = settings.AUTH_USER_MODEL
-    form_class = UserCreationForm
-    template_name = "users/register.html"
-    success_url = reverse_lazy("users:login")
+class UserRegisterView(CreateAPIView):
+    serializer_class = UserRegisterSerializer
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = serializer.save()
+        _, token = AuthToken.objects.create(user)
+        headers = self.get_success_headers(serializer.data)
+
+        return Response(
+            {
+                "user": serializer.data,
+                "token": token,
+            },
+            status=HTTP_201_CREATED,
+            headers=headers,
+        )
 
 
 class UserLoginView(LoginView):
-    form_class = UserLoginForm
-    template_name = "users/login.html"
-    next_page = reverse_lazy("users:profile")
+    permission_classes = (AllowAny,)
+
+    def post(self, request, format=None):
+        serializer = UserAuthTokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data["user"]
+        login(request, user)
+        return super().post(request, format=format)
 
 
-class UserLogoutView(LogoutView):
-    template_name = "users/logout.html"
-    next_page = reverse_lazy("home")
+class UserProfileView(RetrieveAPIView):
+    serializer_class = UserDetailSerializer
+    permission_classes = (IsAuthenticated,)
 
-
-class UserProfileView(LoginRequiredMixin, DetailView):
-    model = settings.AUTH_USER_MODEL
-    template_name = "users/profile.html"
-    context_object_name = "profile"
-
-    def get_object(self, queryset: QuerySet["User"] | None = None) -> "User":
+    def get_object(self, queryset=None):
         return self.request.user
