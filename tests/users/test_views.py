@@ -1,91 +1,91 @@
 import pytest
 from django.urls import reverse
-from pytest_django.asserts import assertRedirects
 
 from users.models import User
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize(
-    "email, password1, password2, username, first_name, last_name, error_keys",
-    [
-        ("", "", "", "", "", "", ["email", "password1", "password2", "username"]),
-        ("foo@bar.com", "", "", "", "", "", ["password1", "password2", "username"]),
-        (
-            "foo@bar.com",
-            "password",
-            "password",
-            "foo",
-            "",
-            "",
-            ["password1", "password2"],
-        ),
-        (
-            "foo@bar.com",
-            "strong_pass",
-            "password",
-            "foo",
-            "",
-            "",
-            ["password2"],
-        ),
-        (
-            "foo@bar.com",
-            "strong_pass",
-            "strong_pass",
-            "foo",
-            "",
-            "",
-            [],
-        ),
-        (
-            "foo@bar.com",
-            "strong_pass",
-            "strong_pass",
-            "foo",
-            "",
-            "",
-            ["email"],
-        ),
-    ],
-)
-def test_registration(
-    email, password1, password2, username, first_name, last_name, error_keys, client
-):
+def test_registration(client):
     url = reverse("users:register")
+
+    # Missing values for required fields
     data = {
-        "email": email,
-        "password1": password1,
-        "password2": password2,
-        "username": username,
-        "first_name": first_name,
-        "last_name": last_name,
+        "email": "",
+        "password": "",
+        "username": "",
+        "first_name": "",
+        "last_name": "",
     }
     response = client.post(url, data=data)
-    # If errors occured with the form, the template return 200 with a list of errors
-    if response.status_code == 200 and error_keys:
-        form = response.context.get("form")
-        errors = form.errors or {}
 
-        for error_key in errors.keys():
-            assert error_key in error_keys
-    # Else the user is redirected to the login form
-    else:
-        assert response.status_code == 302
-        assert User.objects.get(email=email)
+    errors = response.data or {}
+    expected_errors_keys = ["email", "password", "username"]
+    assert response.status_code == 400
+    assert len(errors.keys()) == len(expected_errors_keys)
+    for error_key in errors.keys():
+        assert error_key in expected_errors_keys
+
+    # User is created
+    data = {
+        "email": "foo@bar.com",
+        "password": "password",
+        "username": "foo",
+        "first_name": "",
+        "last_name": "",
+    }
+    response = client.post(url, data=data)
+
+    assert response.status_code == 201
+    assert response.data["user"]["email"] == data["email"]
+    assert response.data.get("token") is not None
+    assert User.objects.count() == 1
+
+    # User already exists and is not duplicated
+    response = client.post(url, data=data)
+
+    errors = response.data or {}
+    expected_errors_keys = ["email", "username"]
+    assert response.status_code == 400
+    assert len(errors.keys()) == len(expected_errors_keys)
+    for error_key in errors.keys():
+        assert error_key in expected_errors_keys
+    assert User.objects.count() == 1
 
 
 @pytest.mark.django_db
-def test_user_profile(client, create_user, test_password):
+def test_login(client, create_user, test_password):
+    url = reverse("users:login")
+
+    data = {
+        "email": "foo@bar.com",
+        "password": test_password,
+    }
+    response = client.post(url, data=data)
+    assert response.status_code == 400
+    assert response.data.get("token") is None
+
+    user = create_user()
+    data = {
+        "email": user.email,
+        "password": test_password,
+    }
+    response = client.post(url, data=data)
+    assert response.status_code == 200
+    assert response.data.get("token") is not None
+
+
+@pytest.mark.django_db
+def test_user_profile(api_client, create_user):
     url = reverse("users:profile")
 
     # Anonymous user is redirect to the login view
-    response = client.get(url)
-    expected_redirection_url = f"{reverse('users:login')}?next={url}"
-    assertRedirects(response, expected_redirection_url)
+    response = api_client.get(url)
+    assert response.status_code == 401
+    assert response.data["detail"].code == "not_authenticated"
 
     # Authenticated user can see their profile
     user = create_user()
-    client.login(email=user.email, password=test_password)
-    response = client.get(url)
+    api_client.force_authenticate(user)
+    response = api_client.get(url)
     assert response.status_code == 200
+    assert response.data["email"] == user.email
