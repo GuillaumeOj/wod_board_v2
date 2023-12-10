@@ -1,9 +1,10 @@
-from django.urls import path
+from rest_framework.routers import SimpleRouter
 
-from wods.views import WodCreateView, WodListView
+from wods.views import WodViewset
 
 app_name = "wods"
-urlpatterns = [
-    path("", WodListView.as_view(), name="list"),
-    path("create/", WodCreateView.as_view(), name="create"),
-]
+
+wod_router = SimpleRouter()
+wod_router.register(r"", WodViewset)
+
+urlpatterns = wod_router.urls

@@ -1,37 +1,28 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView
+from knox.views import IsAuthenticated
+from rest_framework.viewsets import ModelViewSet
 
-from wods.forms import WodForm
 from wods.models import Wod
+from wods.serializers import WodSerializer
 
 
-class WodListView(LoginRequiredMixin, ListView):
-    model = Wod
-    context_object_name = "wods"
-    template_name = "wods/list.html"
+class WodViewset(ModelViewSet):
+    serializer_class = WodSerializer
+    queryset = Wod.objects.all()
+    permission_classes = (IsAuthenticated,)
 
-    def get_queryset(self):
-        return Wod.objects.filter(user=self.request.user)
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
 
+    # def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+    #     self.object = None
+    #     form = self.get_form()
+    #     if not form.is_valid():
+    #         return self.form_invalid(form)
 
-class WodCreateView(LoginRequiredMixin, CreateView):
-    model = Wod
-    form_class = WodForm
-    template_name = "wods/create.html"
-    success_url = reverse_lazy("home")
+    #     wod = form.save(commit=False)
+    #     wod.user = request.user
+    #     wod.save()
 
-    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        self.object = None
-        form = self.get_form()
-        if not form.is_valid():
-            return self.form_invalid(form)
+    #     self.object = wod
 
-        wod = form.save(commit=False)
-        wod.user = request.user
-        wod.save()
-
-        self.object = wod
-
-        return HttpResponseRedirect(self.get_success_url())
+    #     return HttpResponseRedirect(self.get_success_url())
