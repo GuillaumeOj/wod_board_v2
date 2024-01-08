@@ -37,16 +37,22 @@ class UserAuthTokenSerializer(serializers.Serializer):
         return attrs
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id", "username")
+
+
 class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("email", "username", "first_name", "last_name")
+        fields = ("id", "email", "username", "first_name", "last_name")
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("email", "username", "password", "first_name", "last_name")
+        fields = ("" "email", "username", "password", "first_name", "last_name")
         extra_kwargs = {
             "password": {
                 "write_only": True,

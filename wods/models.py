@@ -18,7 +18,9 @@ class Movement(models.Model):
 
 
 class Round(models.Model):
+    repetitions = models.IntegerField(validators=[MinValueValidator(1)], default=1)
     movements = models.ManyToManyField(Movement, through="MovementInRound")
+    wod = models.ForeignKey("Wod", related_name="rounds", on_delete=models.CASCADE)
 
 
 class MovementInRound(models.Model):
@@ -30,7 +32,6 @@ class MovementInRound(models.Model):
 class Wod(models.Model):
     name = models.CharField(max_length=15, blank=True, null=True)
     category = models.CharField(choices=WodCategoryChoices.choices)
-    rounds = models.ManyToManyField(Round, through="RoundInWod")
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name=_("author"),
@@ -38,9 +39,3 @@ class Wod(models.Model):
         on_delete=models.CASCADE,
         default=None,
     )
-
-
-class RoundInWod(models.Model):
-    round = models.ForeignKey(Round, on_delete=models.CASCADE)
-    wod = models.ForeignKey(Wod, on_delete=models.CASCADE)
-    repetitions = models.IntegerField(validators=[MinValueValidator(1)], default=1)
